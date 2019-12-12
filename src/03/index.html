@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>index</title>
+	<link rel="shortcut icon" href="favicon.ico">
+	<style type="text/css">
+		body{
+			
+			background: url(../img/110.png) no-repeat;
+			background-size:cover;
+		}
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		.box{
+			position: absolute;
+			top: 135px;
+			left: 907px;
+			width: 400px;
+			height:240px;
+			margin:100px auto;
+			border-radius: 5px;
+			line-height: 50px;	
+		}
+		.txt{
+			position: absolute;
+			top: 3px;
+			left: 18px;
+			width: 307px;
+			height: 39px;
+		}
+		.pas{
+			position: absolute;
+			top: 76px;
+			left: 18px;
+			width: 307px;
+			height: 39px;
+		}
+		.but{
+			position: absolute;
+			top: 180px;
+			left: 18px;
+			width: 311px;
+			height: 43px;
+		}
+		
+
+	</style>
+</head>
+<body>
+	<div class="box">
+		<div class="show"></div>
+		<form>
+			<p><input type="text" class="txt"></p>
+			<p><input type="password" class="pas"></p>
+			<p><input type="button" value="点击登陆" class="but"></p>
+		</form>
+	</div>
+<script type="text/javascript" src="./base.js"></script>
+<script type="text/javascript">
+	//  需求分析:
+	//1 通过表单输入用户名和密码可以实现登陆功能
+	//2 如果该浏览器曾经登陆过,那么下次就可以不用输入用户名和密码直接通过cookie登陆
+	//3 所有的登陆功能都不能跳页,要局部刷新
+
+
+	//1 通过表单输入用户名和密码可以实现登陆功能
+	var unameInp = document.querySelector("[type=text]");//用户名输入
+	var pwInp = document.querySelector("[type=password]");//密码输入
+	var loginBtn = document.querySelector('[type=button]');//登陆按钮
+	var showBox = document.querySelector('.show');//显示登录结果的盒子
+	loginBtn.onclick = ()=>{
+		//用户名
+		var uname = unameInp.value
+		//密码
+		var pw = pwInp.value;
+		//请求后台接口,让后台页面帮我连接数据库,看看有没有这个用户,然后把查询结果返回给我:1表示成功,0表示失败
+		//发ajax请求
+		//初始化xhr对象
+		var xhr = new XMLHttpRequest;
+		//请求
+		xhr.open('post','./server.php');
+		xhr.setRequestHeader('content-type','application/x-www-form-urlencoded');
+		xhr.send(`username=${uname}&password=${pw}`);
+		//响应
+		xhr.onreadystatechange = function(){
+			if(xhr.status==200&&xhr.readyState==4){
+				if(xhr.responseText==1){
+					//登陆成功
+					// showBox.innerHTML = `欢迎${uname}回来!`;
+					//  alert(`欢迎${uname}回来!`)
+					loginBtn.parentNode.parentNode.style.display="none";
+				}else{
+					// showBox.innerHTML = "用户名或者密码错误,请重新登陆";
+					alert('用户名或者密码错误,请重新登陆')
+					loginBtn.parentNode.parentNode.style.display="block";
+				}
+			}
+		}
+	}
+
+	// //2 如果该浏览器曾经登陆过,那么下次就可以不用输入用户名和密码直接通过cookie登陆
+	// var uname = getCookie('name');
+	// var pw = getCookie('password');
+	// console.log(uname)
+	// console.log(pw)
+	// //发ajax请求
+	// //初始化xhr对象
+	// var xhr = new XMLHttpRequest;
+	// //请求
+	// xhr.open('post','./server.php');
+	// xhr.setRequestHeader('content-type','application/x-www-form-urlencoded');
+	// xhr.send(`username=${uname}&password=${pw}`);
+	// //响应
+	// xhr.onreadystatechange = function(){
+	// 	if(xhr.status==200&&xhr.readyState==4){
+	// 		if(xhr.responseText==1){
+	// 			//登陆成功
+	// 			showBox.innerHTML = `欢迎${uname}回来!`;
+	// 			loginBtn.parentNode.parentNode.style.display="none";
+	// 		}
+	// 	}
+	// }
+
+
+
+
+	//2 如果该浏览器曾经登陆过,那么下次就可以不用输入用户名和密码直接通过cookie登陆	
+	//发ajax请求
+	//初始化xhr对象
+	var xhr = new XMLHttpRequest;
+	//请求
+	xhr.open('get','./server.php');	
+	xhr.send(null);
+	//响应
+	xhr.onreadystatechange = function(){
+		if(xhr.status==200&&xhr.readyState==4){
+			if(xhr.responseText==1){
+				//登陆成功
+				showBox.innerHTML = `欢迎${decodeURIComponent(getCookie('name'))}回来!`;
+				loginBtn.parentNode.parentNode.style.display="none";
+			}
+		}
+	}
+</script>
+</body>
+</html>
